@@ -81,6 +81,19 @@ print("Decoded:", decoded)
 
 ---
 
+## 📌 Version
+
+Current version: `v1.0.0`  
+(You can increment this as you add features or fix bugs.)
+
+---
+
+## 🔧 Maintenance
+
+This project is currently **maintained** by [Sarthak].  
+Expect updates, improvements, and potential bug fixes based on feedback and use cases.
+
+
 ## 📜 License
 
 Licensed under the **Apache License 2.0**.
