@@ -92,7 +92,7 @@ Current version: `v1.0.0`
 
 ## 🔧 Maintenance
 
-This project is currently **maintained** by [Sylo].  
+This project is currently **maintained** by [NeuraVerse].  
 Expect updates, improvements, and potential bug fixes based on feedback and use cases.
 
 
