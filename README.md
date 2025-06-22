@@ -29,6 +29,8 @@ Place `tokenizer.py` in your project directory.
 ## 🧐 Training the Tokenizer
 
 Train a new vocabulary on your dataset (`data.txt` or `data.csv`):
+______________Or______________ 
+Simply use the Pre-trained **vocab.json**
 
 ```python
 from tokenizer import TokenizerTrainer
