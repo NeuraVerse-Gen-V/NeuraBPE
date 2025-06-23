@@ -85,7 +85,7 @@ print("Decoded:", decoded)
 
 ## 📌 Version
 
-Current version: `v1.0.0`  
+Current version: `v1.0.1`  
 (You can increment this as you add features or fix bugs.)
 
 ---
