@@ -49,7 +49,7 @@ def merge_chunk(tokens, most_common, new_token_id):
 
 
 class BPETokenizer():
-    def __init__(self,method=None,data=None,n_merges=10000):
+    def __init__(self,method=None,data=None,n_vocab=10000):
         if method not in ["train", "encode-decode"]:
             raise ValueError("Method must be either 'train' or 'encode-decode'.")
         
@@ -57,39 +57,40 @@ class BPETokenizer():
             raise ValueError("Data must be provided for BPE Tokenizer.")
         
         self.data = data
-        self.n_merges = n_merges
-
-    
+        self.n_vocab = n_vocab
 
     def train(self):
         data = self.data
-        n_merges = self.n_merges
+        n_vocab = self.n_vocab
         tokens = [ord(a) for a in data if ord(a) < 256]
         vocab = {ord(a): a for a in data if ord(a) < 256}
         starting_index = 256
         merged_pairs = {}
+        max_merges = n_vocab
 
-        for _ in tqdm(range(n_merges), desc="Training BPE"):
+        print("Starting BPE training...")
+        pbar = tqdm(total=max_merges, desc="Merging pairs")
+
+        while True:
             pairs = {}
             for i in range(len(tokens) - 1):
                 pair = (tokens[i], tokens[i + 1])
-                if pair in pairs:
-                    pairs[pair] += 1
-                else:
-                    pairs[pair] = 1
-            
+                pairs[pair] = pairs.get(pair, 0) + 1
+
             if not pairs:
                 break
+
             most_common = max(pairs, key=pairs.get)
             new_token_id = starting_index
             merged_pairs[most_common] = new_token_id
             vocab[new_token_id] = most_common
             starting_index += 1
+            pbar.update(1)
 
             # Parallel merge
             n = cpu_count()
             chunk_size = len(tokens) // n + 1
-            chunks = [tokens[i:i + chunk_size + 1] for i in range(0, len(tokens), chunk_size)]  # +1 for overlap safety
+            chunks = [tokens[i:i + chunk_size + 1] for i in range(0, len(tokens), chunk_size)]
             tasks = [(chunk, most_common, new_token_id) for chunk in chunks]
 
             with Pool(n) as pool:
@@ -99,10 +100,15 @@ class BPETokenizer():
             tokens = []
             for i, chunk in enumerate(results):
                 if i > 0 and tokens and chunk:
-                    if tokens[-1] == chunk[0]:  # remove duplicate merge at boundary
+                    if tokens[-1] == chunk[0]:
                         chunk = chunk[1:]
                 tokens.extend(chunk)
 
+            if len(merged_pairs) >= max_merges:
+                print(f"\nTokenizer trained with vocab size of {len(vocab)}")
+                break
+
+        pbar.close()
 
         sp_tok_index = max(vocab.keys()) + 1
         special_tokens = {
@@ -117,6 +123,7 @@ class BPETokenizer():
         vocab.update({v: k for k, v in special_tokens.items()})
 
         return vocab
+
 
 
     def encode(self, text):
@@ -160,7 +167,6 @@ class BPETokenizer():
         for token in merged_tokens:
             if token.startswith("["):
                 tokens.append(vocab[token])
-                print(token)
             else:
                 tokens.append(vocab.get(token, vocab["<unk>"]))
 
@@ -194,12 +200,12 @@ class BPETokenizer():
 
 
 class TokenizerTrainer():
-    def __init__(self, Filepath,n_merges=1000):
+    def __init__(self, Filepath,n_vocab=1000):
         self.filepath = Filepath
-        self.data= load_file(self.filepath)*3
+        self.data= load_file(self.filepath)
         if self.data is None:
             raise ValueError("Data could not be loaded from the file, this is likely due to missing file.")
-        self.bpe_tokenizer = BPETokenizer(method="train",data=self.data, n_merges=n_merges)
+        self.bpe_tokenizer = BPETokenizer(method="train",data=self.data, n_vocab=n_vocab)
         self.vocab = self.bpe_tokenizer.train()
         self.save_vocab()
     
@@ -211,4 +217,4 @@ class TokenizerTrainer():
 
 
 if __name__ == "__main__":
-    Trainer = TokenizerTrainer("data.csv",n_merges=20000)
+    Trainer = TokenizerTrainer("data.csv",n_vocab=50000)

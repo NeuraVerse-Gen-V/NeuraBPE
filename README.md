@@ -35,7 +35,7 @@ Simply use the Pre-trained **vocab.json**
 ```python
 from tokenizer import TokenizerTrainer
 
-trainer = TokenizerTrainer("data.csv", n_merges=20000)
+trainer = TokenizerTrainer("data.csv", n_vocab=20000)
 ```
 
 Vocabulary will be saved as `vocab.json`.
