@@ -217,4 +217,4 @@ class TokenizerTrainer():
 
 
 if __name__ == "__main__":
-    Trainer = TokenizerTrainer("data.csv",n_vocab=50000)
+    Trainer = TokenizerTrainer("data.csv",n_vocab=10000)
