@@ -131,4 +131,4 @@ class TokenizerTrainer():
         print(f"Vocabulary saved to {filepath}")
 
 if __name__ == "__main__":
-    Trainer = TokenizerTrainer("data.txt",n_vocab=5)
+    Trainer = TokenizerTrainer("data.txt",n_vocab=50000)
