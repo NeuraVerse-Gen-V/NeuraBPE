@@ -8,7 +8,7 @@ def decode(token_ids):
     tokenizer= TOKENIZER.BPETokenizer()
     return tokenizer.decode(token_ids)
 
-sentence="This is the final test and update for the BPE Tokenizer. It should work perfectly now, and I am very happy with the results. I hope you are too! :)"
+sentence="Hello my name is Sylo"
 encoded= encode(sentence)
 decoded = decode(encoded)
 
